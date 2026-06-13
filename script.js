@@ -44,6 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { text: "And if someday life becomes a little easier, and our paths happen to cross again, I would be happy simply knowing that you're doing well.", type: "body" },
     { text: "Until then, please be kind to yourself, keep moving forward, and never stop believing in your own strength.", type: "body" },
     { text: "I hope you're doing well. ❤️", type: "body" },
+    { text: "No matter how many letters I write,", type: "body" },
+    { text: "they will always be shorter than what I feel for you.", type: "body" },
+    { text: "❤️", type: "body" },
     { text: "With warmth and sincerity,", type: "body" },
     { text: "— Jatin", type: "signature" }
   ];
@@ -378,6 +381,10 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Add view transition class to body
       document.body.classList.add('body-reading-active');
+      
+      // Initialize dynamic memory photos
+      if (window.initFloatingPolaroids) window.initFloatingPolaroids();
+      if (window.startFloatingPhotoRotation) window.startFloatingPhotoRotation();
       
       // Start typing letter content
       setTimeout(() => {
@@ -714,6 +721,457 @@ document.addEventListener('DOMContentLoaded', () => {
 
     animationFrameId = requestAnimationFrame(loopParticles);
   }
+
+  // --- Relationship Count-up Clock Logic ---
+  const relationshipStartDate = new Date('2025-11-30T00:00:00');
+
+  function updateRelationshipClock() {
+    const now = new Date();
+    const differenceMs = now.getTime() - relationshipStartDate.getTime();
+
+    if (differenceMs < 0) {
+      document.getElementById('days-count').textContent = '0';
+      document.getElementById('hours-count').textContent = '00';
+      document.getElementById('minutes-count').textContent = '00';
+      document.getElementById('seconds-count').textContent = '00';
+      return;
+    }
+
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const msPerHour = 60 * 60 * 1000;
+    const msPerMinute = 60 * 1000;
+
+    const days = Math.floor(differenceMs / msPerDay);
+    const hours = Math.floor((differenceMs % msPerDay) / msPerHour);
+    const minutes = Math.floor((differenceMs % msPerHour) / msPerMinute);
+    const seconds = Math.floor((differenceMs % msPerMinute) / 1000);
+
+    document.getElementById('days-count').textContent = days;
+    document.getElementById('hours-count').textContent = String(hours).padStart(2, '0');
+    document.getElementById('minutes-count').textContent = String(minutes).padStart(2, '0');
+    document.getElementById('seconds-count').textContent = String(seconds).padStart(2, '0');
+  }
+
+  // Start the ticking clock
+  setInterval(updateRelationshipClock, 1000);
+  updateRelationshipClock(); // initial run
+
+  // --- Interactive Vintage Flip Cards Logic ---
+  const flipCards = document.querySelectorAll('.flip-card');
+  const flipCardPhotos = shuffleArray(memoryPhotos);
+
+  flipCards.forEach((card, idx) => {
+    const front = card.querySelector('.flip-card-front');
+    if (front) {
+      const photo = flipCardPhotos[idx % flipCardPhotos.length];
+      
+      const img = document.createElement('img');
+      img.className = 'card-front-photo';
+      img.src = photo;
+      img.alt = "Memory Front";
+      img.loading = "lazy";
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'card-front-overlay';
+      
+      front.prepend(overlay);
+      front.prepend(img);
+    }
+
+    card.addEventListener('click', () => {
+      const inner = card.querySelector('.flip-card-inner');
+      inner.classList.toggle('flipped');
+      
+      // Play a soft paper rustling flap sound if audio is initialized
+      if (audioCtx) {
+        playPaperRustle();
+      }
+    });
+  });
+
+  // --- Dynamic Polaroid Memories Logic ---
+  const memoryPhotos = [
+    "WhatsApp Image 2026-03-28 at 15.32.38.jpeg",
+    "WhatsApp Image 2026-03-28 at 15.32.39 (1).jpeg",
+    "WhatsApp Image 2026-03-28 at 15.32.39 (2).jpeg",
+    "WhatsApp Image 2026-03-28 at 15.32.39 (3).jpeg",
+    "WhatsApp Image 2026-03-28 at 15.32.39.jpeg",
+    "WhatsApp Image 2026-03-28 at 15.32.40.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.43 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.43.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.44 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.44 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.44.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.45 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.45.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.46 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.46 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.46.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.47 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.47 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.47.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.48 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.48.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.49 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.49 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.49.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.50.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.51.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.52.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.53 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.53.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.54 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.54.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.55 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.55 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.55.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.56 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.56 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.56.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.57 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.57.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.58 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.58 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.58.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.59 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.59 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.54.59.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.00 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.00 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.00.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.01 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.01 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.01.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.02 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.02.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.03 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.03 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.03.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.04 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.04 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.04 (3).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.04.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.05 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.05.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.06 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.06 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.06.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.07 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.07 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.07.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.08 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.08 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.08.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.09 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.09 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.09.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.10 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.10 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.10.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.11 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.11 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.11 (3).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.11.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.12 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.12.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.13 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.13 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.13.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.14 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.14.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.15 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.15 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.15.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.16 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.16 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.16.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.17 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.17 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.17.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.18 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.18 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.18.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.19 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.19.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.31.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.32 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.32.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.38 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.38.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.39 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.39 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.39 (3).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.39.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.40 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.40 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.40.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.41 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.41 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.41.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.42 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.42 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.42.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.43 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.43 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.43.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.44 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.44 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.44.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.45 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.45 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.45.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.46 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.46 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.46.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.47 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.47 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.47.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.48 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.48 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.48 (3).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.48.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.49 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.49 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.49.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.50 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.50.jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.51 (1).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.51 (2).jpeg",
+    "WhatsApp Image 2026-04-14 at 14.55.51.jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.14.jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.15 (1).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.15 (2).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.15.jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.16 (1).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.16 (2).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.16.jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.17 (1).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.17 (2).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.17.jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.18 (1).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.18 (2).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.18.jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.19 (1).jpeg",
+    "WhatsApp Image 2026-04-18 at 23.35.19.jpeg",
+    "tanisha 1.jpeg",
+    "tanisha 2.jpeg",
+    "tanisha 3.jpeg",
+    "tanisha 4.jpeg",
+    "tanisha 5.jpeg",
+    "tanisha 6.jpeg"
+  ];
+
+  const floatingContainer = document.getElementById('floating-polaroids-container');
+  let activeFloatingPhotos = [];
+  let photoQueue = [];
+  
+  const lightboxOverlay = document.createElement('div');
+  lightboxOverlay.className = 'lightbox-overlay';
+  document.body.appendChild(lightboxOverlay);
+
+  // Helper to shuffle the image pool
+  function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function setupLightbox(element) {
+    element.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (element.classList.contains('zoomed')) {
+        closeLightbox();
+      } else {
+        closeLightbox();
+        element.classList.add('zoomed');
+        lightboxOverlay.classList.add('active');
+        if (audioCtx) {
+          playPaperRustle();
+        }
+      }
+    });
+  }
+
+  function closeLightbox() {
+    const currentlyZoomed = document.querySelector('.zoomed');
+    if (currentlyZoomed) {
+      currentlyZoomed.classList.remove('zoomed');
+      lightboxOverlay.classList.remove('active');
+      if (audioCtx) {
+        playPaperRustle();
+      }
+    }
+  }
+
+  lightboxOverlay.addEventListener('click', closeLightbox);
+  window.addEventListener('scroll', closeLightbox);
+
+  function initFloatingPolaroids() {
+    if (!floatingContainer) return;
+    floatingContainer.innerHTML = '';
+    
+    // Shuffle the entire photo pool
+    const shuffledPool = shuffleArray(memoryPhotos);
+    
+    // Distribute first 14 to screen, store the rest in the playlist queue
+    activeFloatingPhotos = shuffledPool.slice(0, 14);
+    photoQueue = shuffledPool.slice(14);
+
+    const positions = [
+      // Left side staggered vertically
+      { top: '5%', left: '5%', rot: '-6deg', animClass: 'float-anim-1' },
+      { top: '20%', left: '11%', rot: '5deg', animClass: 'float-anim-3' },
+      { top: '35%', left: '4%', rot: '-4deg', animClass: 'float-anim-5' },
+      { top: '50%', left: '12%', rot: '7deg', animClass: 'float-anim-2', tooltip: "I'm so incredibly lucky to have you 🍀" },
+      { top: '65%', left: '6%', rot: '-8deg', animClass: 'float-anim-4' },
+      { top: '80%', left: '10%', rot: '4deg', animClass: 'float-anim-6' },
+      { top: '94%', left: '5%', rot: '-5deg', animClass: 'float-anim-1' },
+
+      // Right side staggered vertically
+      { top: '8%', right: '7%', rot: '8deg', animClass: 'float-anim-2' },
+      { top: '23%', right: '12%', rot: '-7deg', animClass: 'float-anim-4' },
+      { top: '38%', right: '5%', rot: '6deg', animClass: 'float-anim-6' },
+      { top: '53%', right: '13%', rot: '-5deg', animClass: 'float-anim-1' },
+      { top: '68%', right: '6%', rot: '9deg', animClass: 'float-anim-3' },
+      { top: '83%', right: '11%', rot: '-6deg', animClass: 'float-anim-5' },
+      { top: '96%', right: '8%', rot: '4deg', animClass: 'float-anim-2' }
+    ];
+
+    positions.forEach((pos, idx) => {
+      const photo = activeFloatingPhotos[idx];
+
+      const polaroid = document.createElement('div');
+      polaroid.className = `floating-polaroid ${pos.animClass}`;
+      polaroid.style.setProperty('--rot', pos.rot);
+      
+      if (pos.left) {
+        polaroid.style.left = pos.left;
+      } else {
+        polaroid.style.right = pos.right;
+      }
+      polaroid.style.top = pos.top;
+      polaroid.style.transitionDelay = `${0.3 + idx * 0.15}s`;
+
+      // Construct card HTML structure with direct image, stickers, and tooltip
+      let innerHTML = `<img src="${photo}" alt="Tanisha Memory" loading="lazy">`;
+
+      if (pos.tooltip) {
+        innerHTML += `<div class="speech-bubble-tooltip">${pos.tooltip}</div>`;
+      }
+
+      // Add cute sparkles and pink hearts sticker overlays on some cards
+      if (idx === 0) {
+        innerHTML += `<span class="floating-card-sticker sticker-top-left">✨</span>`;
+      } else if (idx === 1) {
+        innerHTML += `<span class="floating-card-sticker sticker-top-right">💖</span>`;
+      } else if (idx === 4) {
+        innerHTML += `<span class="floating-card-sticker sticker-bottom-right">✨</span>`;
+      } else if (idx === 7) {
+        innerHTML += `<span class="floating-card-sticker sticker-top-left">💖</span>`;
+      } else if (idx === 9) {
+        innerHTML += `<span class="floating-card-sticker sticker-bottom-left">✨</span>`;
+      } else if (idx === 12) {
+        innerHTML += `<span class="floating-card-sticker sticker-top-right">💖</span>`;
+      }
+
+      polaroid.innerHTML = innerHTML;
+
+      floatingContainer.appendChild(polaroid);
+      setupLightbox(polaroid);
+    });
+  }
+
+  function startFloatingPhotoRotation() {
+    setInterval(() => {
+      const polaroids = document.querySelectorAll('.floating-polaroid');
+      if (polaroids.length === 0 || document.querySelector('.zoomed')) return;
+
+      const randIdx = Math.floor(Math.random() * polaroids.length);
+      const polaroid = polaroids[randIdx];
+      const img = polaroid.querySelector('img');
+
+      polaroid.style.opacity = '0';
+
+      setTimeout(() => {
+        if (photoQueue.length === 0) {
+          // Re-populate and shuffle if the queue is empty
+          photoQueue = shuffleArray(memoryPhotos).filter(p => !activeFloatingPhotos.includes(p));
+        }
+
+        const newPhoto = photoQueue.shift();
+        const oldPhoto = activeFloatingPhotos[randIdx];
+
+        activeFloatingPhotos[randIdx] = newPhoto;
+        img.src = newPhoto;
+        photoQueue.push(oldPhoto); // Put the old photo back in the queue for later rotation
+        
+        const newRot = `${(Math.random() * 20 - 10).toFixed(1)}deg`;
+        polaroid.style.setProperty('--rot', newRot);
+
+        // Reset inline opacity to let CSS transition control it back to background value
+        polaroid.style.opacity = '';
+      }, 2000);
+    }, 12000);
+  }
+
+  window.initFloatingPolaroids = initFloatingPolaroids;
+  window.startFloatingPhotoRotation = startFloatingPhotoRotation;
+
+  // --- Custom Heart Cursor Tracker ---
+  const cursorHeart = document.createElement('div');
+  cursorHeart.className = 'cursor-heart-tracker';
+  cursorHeart.textContent = '💖'; // Glowing pink heart
+  document.body.appendChild(cursorHeart);
+
+  let mouseActive = false;
+
+  window.addEventListener('mousemove', (e) => {
+    if (!mouseActive) {
+      mouseActive = true;
+      cursorHeart.style.opacity = '1';
+    }
+    // Track mouse with smooth CSS transition
+    cursorHeart.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+  });
+
+  window.addEventListener('mouseleave', () => {
+    cursorHeart.style.opacity = '0';
+    mouseActive = false;
+  });
+
+  // --- Click Emoji Explosion ---
+  const clickEmojisList = ['❤️', '💖', '💕', '✨', '🌸', '🌹', '💘', '💗', '🍓', '🧸'];
+
+  window.addEventListener('click', (e) => {
+    const burstCount = 6 + Math.floor(Math.random() * 4); // 6 to 9 emojis per burst
+    for (let i = 0; i < burstCount; i++) {
+      const span = document.createElement('span');
+      span.className = 'click-emoji-pop';
+      span.textContent = clickEmojisList[Math.floor(Math.random() * clickEmojisList.length)];
+      
+      span.style.left = `${e.clientX}px`;
+      span.style.top = `${e.clientY}px`;
+      
+      // Random physics displacement
+      const dx = `${(Math.random() * 160 - 80).toFixed(1)}px`;
+      const dy = `${(Math.random() * -120 - 30).toFixed(1)}px`; // Upwards float
+      const rot = `${(Math.random() * 360 - 180).toFixed(1)}deg`;
+      
+      span.style.setProperty('--dx', dx);
+      span.style.setProperty('--dy', dy);
+      span.style.setProperty('--rot', rot);
+      
+      document.body.appendChild(span);
+      
+      // Self-destruct span after animation finishes
+      setTimeout(() => {
+        span.remove();
+      }, 950);
+    }
+  });
 
   // Initialize particles
   setupParticles();

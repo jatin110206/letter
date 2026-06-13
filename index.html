@@ -27,6 +27,9 @@
   <!-- Fullscreen Particle & Fireflies Canvas -->
   <canvas id="ambient-canvas"></canvas>
 
+  <!-- Container for dynamically spawned floating photo cards (drifting in background) -->
+  <div id="floating-polaroids-container"></div>
+
   <div class="desk" id="desk">
     <!-- Candle Ornament with flicker effect -->
     <div class="candle-container">
@@ -89,43 +92,35 @@
         </svg>
       </div>
 
-      <!-- Polaroid Memory Frames drifting in background -->
-      <div class="polaroid-frame" id="polaroid-1">
-        <div class="polaroid-img-placeholder">
-          <!-- Flower/Rose drawing path -->
-          <svg viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-          </svg>
-        </div>
-        <div class="polaroid-caption">A walk in the rain...</div>
-      </div>
-
-      <div class="polaroid-frame" id="polaroid-2">
-        <div class="polaroid-img-placeholder">
-          <!-- Heart outline -->
-          <svg viewBox="0 0 24 24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-          </svg>
-        </div>
-        <div class="polaroid-caption">Late night conversations</div>
-      </div>
-
-      <div class="polaroid-frame" id="polaroid-3">
-        <div class="polaroid-img-placeholder">
-          <!-- Music note -->
-          <svg viewBox="0 0 24 24">
-            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-          </svg>
-        </div>
-        <div class="polaroid-caption">Under the golden stars</div>
-      </div>
-
       <!-- Letter Paper -->
       <div class="letter-paper">
         <div class="letter-inner">
           <p class="letter-date">June 12, 2026</p>
           <div class="letter-content" id="letter-content">
             <!-- Hand-typed content dynamically rendered here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Relationship Count-up Clock (Visible immediately when letter is opened) -->
+      <div class="relationship-clock-container">
+        <h3 class="clock-title">Time Since Our Story Aligned</h3>
+        <div class="clock-display">
+          <div class="clock-unit">
+            <span class="clock-num" id="days-count">0</span>
+            <span class="clock-label">Days</span>
+          </div>
+          <div class="clock-unit">
+            <span class="clock-num" id="hours-count">00</span>
+            <span class="clock-label">Hours</span>
+          </div>
+          <div class="clock-unit">
+            <span class="clock-num" id="minutes-count">00</span>
+            <span class="clock-label">Minutes</span>
+          </div>
+          <div class="clock-unit">
+            <span class="clock-num" id="seconds-count">00</span>
+            <span class="clock-label">Seconds</span>
           </div>
         </div>
       </div>
@@ -145,8 +140,85 @@
           but some remain beautiful simply because they happened."
         </p>
 
+        <!-- Vintage Flip Cards (Shown when letter ends) -->
+        <div class="vintage-cards-container">
+          <h3 class="cards-title">Little Pieces of You I Cherish</h3>
+          <div class="cards-grid">
+            
+            <!-- Card 1 -->
+            <div class="flip-card">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="card-border"></div>
+                  <span class="card-heart">❤️</span>
+                  <span class="card-hint">Open</span>
+                </div>
+                <div class="flip-card-back">
+                  <span class="card-reason">❤️ Your smile</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="flip-card">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="card-border"></div>
+                  <span class="card-heart">❤️</span>
+                  <span class="card-hint">Open</span>
+                </div>
+                <div class="flip-card-back">
+                  <span class="card-reason">❤️ The way you overthink</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="flip-card">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="card-border"></div>
+                  <span class="card-heart">❤️</span>
+                  <span class="card-hint">Open</span>
+                </div>
+                <div class="flip-card-back">
+                  <span class="card-reason">❤️ Your laugh</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="flip-card">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="card-border"></div>
+                  <span class="card-heart">❤️</span>
+                  <span class="card-hint">Open</span>
+                </div>
+                <div class="flip-card-back">
+                  <span class="card-reason">❤️ Your kindness</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="flip-card">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="card-border"></div>
+                  <span class="card-heart">❤️</span>
+                  <span class="card-hint">Open</span>
+                </div>
+                <div class="flip-card-back">
+                  <span class="card-reason">❤️ Your stubbornness</span>
+                </div>
+              </div>
+            </div>
+
+
+
         <!-- Final Handwritten Signature -->
-        <p class="final-quote" style="font-family: var(--font-handwriting); font-size: 21px; margin-top: 45px; color: #d0bba6; line-height: 1.6;">
+        <p class="final-quote" style="font-family: var(--font-handwriting); font-size: 26px; margin-top: 55px; color: #d0bba6; line-height: 1.6;">
           Forever wishing you happiness,<br>
           Jatin
         </p>
