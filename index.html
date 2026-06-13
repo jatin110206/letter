@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Letter for Tanisha</title>
+  <meta name="description" content="A vintage interactive love letter written from the heart.">
+  
+  <!-- Google Fonts for handwriting and old-school romance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Homemade+Apple&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background audio button -->
+  <button id="music-toggle" class="music-btn" aria-label="Toggle music" title="Toggle music">
+    <svg class="icon-play" viewBox="0 0 24 24">
+      <path d="M8 5v14l11-7z"/>
+    </svg>
+    <svg class="icon-mute hidden" viewBox="0 0 24 24">
+      <path d="M4.34 2.93L2.93 4.34 7.29 8.7 7 9H3v6h4l5 5v-6.59l4.18 4.18c-.65.49-1.38.88-2.18 1.11v2.06c1.34-.3 2.57-.97 3.61-1.89l2.71 2.71 1.41-1.41L4.34 2.93zM10 15.17L7.83 13H5v-2h2.83l2.17 2.17v2m2-8.36V3l-2.45 2.45 2.45 2.45M19 12c0-1.88-.77-3.58-2-4.8v9.6c1.23-1.22 2-2.92 2-4.8z"/>
+    </svg>
+  </button>
+
+  <!-- Fullscreen Particle & Fireflies Canvas -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <div class="desk" id="desk">
+    <!-- Candle Ornament with flicker effect -->
+    <div class="candle-container">
+      <div class="candle-glow"></div>
+      <div class="candle">
+        <div class="wick"></div>
+        <div class="flame"></div>
+      </div>
+      <div class="candle-holder"></div>
+    </div>
+
+    <!-- LANDING SCENE: Antique Envelope -->
+    <div class="envelope-wrapper" id="envelope-wrapper">
+      <div class="envelope" id="envelope">
+        <!-- Inner deep maroon paper liner -->
+        <div class="envelope-inside"></div>
+
+        <!-- Hidden letter sheet preview (slides up when seal is broken) -->
+        <div class="envelope-preview-sheet"></div>
+
+        <!-- Front side flaps -->
+        <div class="envelope-left"></div>
+        <div class="envelope-right"></div>
+        <div class="envelope-bottom"></div>
+
+        <!-- Opening flap -->
+        <div class="envelope-top" id="envelope-top"></div>
+
+        <!-- Wax Seal holding the flap -->
+        <div class="wax-seal" id="wax-seal">
+          <div class="seal-inner">
+            <span class="seal-letter">T</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Call to Action prompt -->
+      <div class="instructions" id="instructions">
+        A Letter For Tanisha
+      </div>
+    </div>
+
+    <!-- READING SCENE: The Opened Letter -->
+    <div class="letter-container" id="letter-container">
+      <!-- Pressed Dried Rose -->
+      <div class="pressed-rose">
+        <svg viewBox="0 0 100 200" class="dried-rose-svg">
+          <!-- Stem -->
+          <path d="M 50,190 Q 45,130 50,70" stroke="#332a1e" stroke-width="2.5" fill="none"/>
+          <!-- Leaves -->
+          <path d="M 48,150 Q 25,145 35,135 Q 45,130 48,140 Z" fill="#2d2b1f" opacity="0.8"/>
+          <path d="M 50,115 Q 75,110 65,100 Q 55,95 50,105 Z" fill="#2d2b1f" opacity="0.8"/>
+          <!-- Rosebud Petals -->
+          <path d="M 50,70 C 35,60 38,40 48,35 C 50,32 55,30 58,35 C 65,40 68,60 50,70 Z" fill="#501a21" opacity="0.95"/>
+          <path d="M 47,68 C 40,55 42,42 48,40 C 50,39 52,42 50,55 Z" fill="#3b1115" opacity="0.9"/>
+          <path d="M 52,68 C 60,55 58,42 52,40 C 50,39 48,42 50,55 Z" fill="#3b1115" opacity="0.9"/>
+          <path d="M 50,50 C 45,45 45,35 50,30 C 55,35 55,45 50,50 Z" fill="#6a232b" opacity="0.9"/>
+          <!-- Base Sepals -->
+          <path d="M 43,73 Q 46,75 50,70 Q 54,75 57,73 Q 50,78 43,73" fill="#242218"/>
+        </svg>
+      </div>
+
+      <!-- Polaroid Memory Frames drifting in background -->
+      <div class="polaroid-frame" id="polaroid-1">
+        <div class="polaroid-img-placeholder">
+          <!-- Flower/Rose drawing path -->
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+        </div>
+        <div class="polaroid-caption">A walk in the rain...</div>
+      </div>
+
+      <div class="polaroid-frame" id="polaroid-2">
+        <div class="polaroid-img-placeholder">
+          <!-- Heart outline -->
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        <div class="polaroid-caption">Late night conversations</div>
+      </div>
+
+      <div class="polaroid-frame" id="polaroid-3">
+        <div class="polaroid-img-placeholder">
+          <!-- Music note -->
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
+        <div class="polaroid-caption">Under the golden stars</div>
+      </div>
+
+      <!-- Letter Paper -->
+      <div class="letter-paper">
+        <div class="letter-inner">
+          <p class="letter-date">June 12, 2026</p>
+          <div class="letter-content" id="letter-content">
+            <!-- Hand-typed content dynamically rendered here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Scene (Revealed at end of letter typing) -->
+      <div class="final-scene" id="final-scene" style="display: none;">
+        <p class="quote-text">"Some people leave footprints on our hearts that time can never erase."</p>
+        
+        <div class="heart-divider">
+          <svg class="glowing-heart" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        
+        <p class="final-quote">
+          "Perhaps not every love story gets an ending,<br>
+          but some remain beautiful simply because they happened."
+        </p>
+
+        <!-- Final Handwritten Signature -->
+        <p class="final-quote" style="font-family: var(--font-handwriting); font-size: 21px; margin-top: 45px; color: #d0bba6; line-height: 1.6;">
+          Forever wishing you happiness,<br>
+          Jatin
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG Filter to create natural, non-perfect, slightly torn/burnt paper edges -->
+  <svg style="position: absolute; width: 0; height: 0;" width="0" height="0">
+    <filter id="paper-edge">
+      <!-- High frequency noise for rough edges -->
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <script src="script.js"></script>
+</body>
+</html>
