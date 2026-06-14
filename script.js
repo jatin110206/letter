@@ -541,11 +541,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // --- Canvas Particle Systems (Rose Petals & Fireflies) ---
+  // --- Canvas Particle Systems (Rose Petals, Falling Notes & Fireflies) ---
 
   let petals = [];
+  let fallingNotes = [];
   let fireflies = [];
-  const maxPetals = 16;
+  let shootingStars = [];
+  const maxPetals = 10;
+  const maxNotes = 8;
   const maxFireflies = 25;
 
   // Color arrays for rose petals (warm crimsons, dusty roses, dried red)
@@ -603,6 +606,147 @@ document.addEventListener('DOMContentLoaded', () => {
       
       ctx.fillStyle = this.color;
       ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  class NoteParticle {
+    constructor() {
+      this.reset(true);
+    }
+
+    reset(startOffscreen = false) {
+      this.x = Math.random() * canvas.width;
+      this.y = startOffscreen ? -50 : Math.random() * canvas.height;
+      
+      const messages = [
+        "Take care.",
+        "I hope you're smiling.",
+        "Stay safe.",
+        "You matter.",
+        "Always here.",
+        "Be kind to yourself.",
+        "You're cherishable.",
+        "Keep moving forward."
+      ];
+      this.text = messages[Math.floor(Math.random() * messages.length)];
+      
+      this.size = Math.random() * 4 + 11; // 11px to 15px cursive font size
+      this.speedY = Math.random() * 0.4 + 0.25; // slow drift
+      this.speedX = Math.random() * 0.2 - 0.1;
+      this.sway = Math.random() * 100;
+      this.swaySpeed = Math.random() * 0.008 + 0.003;
+      this.angle = Math.random() * 30 - 15;
+      this.spin = Math.random() * 0.15 - 0.075;
+      this.alpha = Math.random() * 0.25 + 0.25;
+    }
+
+    update() {
+      this.y += this.speedY;
+      this.x += this.speedX + Math.sin(this.sway) * 0.35;
+      this.sway += this.swaySpeed;
+      this.angle += this.spin;
+
+      if (this.y > canvas.height + 50 || this.x < -120 || this.x > canvas.width + 120) {
+        this.reset(true);
+      }
+    }
+
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate((this.angle * Math.PI) / 180);
+      
+      // Draw a tiny semi-transparent parchment paper backing
+      ctx.font = `${this.size}px 'Caveat', cursive`;
+      const textWidth = ctx.measureText(this.text).width;
+      const paddingX = 8;
+      const paddingY = 4;
+      
+      ctx.fillStyle = `rgba(248, 243, 232, ${this.alpha * 0.8})`; // Light paper color
+      ctx.strokeStyle = `rgba(197, 160, 89, ${this.alpha * 0.5})`; // Gold border
+      ctx.lineWidth = 1;
+      
+      const w = textWidth + paddingX * 2;
+      const h = this.size + paddingY * 2;
+      const rx = -w / 2;
+      const ry = -h / 2;
+      
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(rx, ry, w, h, 4) : ctx.rect(rx, ry, w, h);
+      ctx.fill();
+      ctx.stroke();
+      
+      // Draw the cursive ink text
+      ctx.fillStyle = `rgba(44, 29, 17, ${this.alpha})`; // Elegant dark ink color
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(this.text, 0, 1);
+      
+      ctx.restore();
+    }
+  }
+
+  class ShootingStar {
+    constructor() {
+      this.reset();
+    }
+
+    reset() {
+      // Start from top-right quadrant, shoot down-left
+      this.x = Math.random() * (canvas.width * 0.6) + canvas.width * 0.4;
+      this.y = Math.random() * (canvas.height * 0.2);
+      this.speed = Math.random() * 12 + 10; // high speed
+      
+      // Angle of shooting star: roughly 135 degrees (down-left)
+      const angleRad = (135 + Math.random() * 10 - 5) * Math.PI / 180;
+      this.dx = Math.cos(angleRad) * this.speed;
+      this.dy = Math.sin(angleRad) * this.speed;
+      
+      this.active = false;
+      this.alpha = 1.0;
+      this.fadeSpeed = 0.025; // Fades out as it travels
+    }
+
+    trigger() {
+      this.reset();
+      this.active = true;
+    }
+
+    update() {
+      if (!this.active) return;
+      
+      this.x += this.dx;
+      this.y += this.dy;
+      this.alpha -= this.fadeSpeed;
+      
+      if (this.alpha <= 0 || this.x < -100 || this.y > canvas.height + 100) {
+        this.active = false;
+      }
+    }
+
+    draw() {
+      if (!this.active) return;
+      
+      ctx.save();
+      // Soft glowing light-gold gradient trail
+      const grad = ctx.createLinearGradient(this.x, this.y, this.x - this.dx * 8, this.y - this.dy * 8);
+      grad.addColorStop(0, `rgba(253, 190, 99, ${this.alpha * 0.85})`);
+      grad.addColorStop(1, 'rgba(253, 190, 99, 0)');
+      
+      ctx.beginPath();
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.8;
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.x - this.dx * 8, this.y - this.dy * 8);
+      ctx.stroke();
+      
+      // Bright tiny core spark
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 1.2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+      ctx.fill();
+      
       ctx.restore();
     }
   }
@@ -689,12 +833,28 @@ document.addEventListener('DOMContentLoaded', () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Seed initial particles
+    // Seed initial petals
     for (let i = 0; i < maxPetals; i++) {
       petals.push(new Petal());
-      // distribute them across screen height initially
       petals[i].y = Math.random() * canvas.height;
     }
+
+    // Seed initial falling notes
+    for (let i = 0; i < maxNotes; i++) {
+      fallingNotes.push(new NoteParticle());
+      fallingNotes[i].y = Math.random() * canvas.height;
+    }
+
+    // Seed shooting stars
+    shootingStars = [new ShootingStar(), new ShootingStar()];
+
+    // Trigger one shooting star every 5 seconds
+    setInterval(() => {
+      const star = shootingStars.find(s => !s.active);
+      if (star) {
+        star.trigger();
+      }
+    }, 5000);
     
     // Seed fireflies (only show fireflies later when letter opens)
     for (let i = 0; i < maxFireflies; i++) {
@@ -709,6 +869,18 @@ document.addEventListener('DOMContentLoaded', () => {
     petals.forEach(petal => {
       petal.update();
       petal.draw();
+    });
+
+    // Falling notes always update and draw
+    fallingNotes.forEach(note => {
+      note.update();
+      note.draw();
+    });
+
+    // Shooting stars update and draw
+    shootingStars.forEach(star => {
+      star.update();
+      star.draw();
     });
 
     // Fireflies only activate and draw when reading the letter to add romance to final paragraphs
@@ -1175,6 +1347,169 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 950);
     }
   });
+
+  // --- "If You Ever Miss Me" Logic ---
+  const missMeButtons = document.querySelectorAll('.miss-me-btn');
+  const missMeResponseText = document.querySelector('.miss-me-response-text');
+
+  const feelingsComfort = {
+    hug: "Sending you the warmest virtual hug. Close your eyes for a second... I am right there wishing you happiness. ❤️",
+    lonely: "Whenever you feel lonely, remember that you occupy a special place in my thoughts. You are never truly alone. 🌟",
+    music: "Playing our tune. Let's listen to this beautiful melody and share this moment together. 🎶",
+    talk: "My doors are always open for you, Tanisha. Send me a message or call whenever you want to talk. 💬"
+  };
+
+  missMeButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const feeling = btn.getAttribute('data-feeling');
+      
+      // Play a soft paper rustle sound
+      if (audioCtx) {
+        playPaperRustle();
+      }
+
+      // Spark explosion effect at cursor
+      triggerClickExplosion(e);
+
+      // Handle different feelings
+      if (feeling === 'memory') {
+        // Find a random image and open in lightbox!
+        const randomPhoto = memoryPhotos[Math.floor(Math.random() * memoryPhotos.length)];
+        
+        // Show comforting text
+        missMeResponseText.style.opacity = '0';
+        setTimeout(() => {
+          missMeResponseText.textContent = "Here is a sweet memory of us... ✨";
+          missMeResponseText.style.opacity = '1';
+        }, 300);
+
+        // Open lightbox with this image
+        setTimeout(() => {
+          openPhotoLightbox(randomPhoto);
+        }, 500);
+
+      } else if (feeling === 'music') {
+        // Toggle music play
+        if (!synthPlaying) {
+          playMusic();
+        }
+        
+        missMeResponseText.style.opacity = '0';
+        setTimeout(() => {
+          missMeResponseText.textContent = feelingsComfort.music;
+          missMeResponseText.style.opacity = '1';
+        }, 300);
+
+        // Burst music notes emojis
+        burstEmojisList(['🎵', '🎶', '🎼', '🎹', '✨']);
+
+      } else {
+        const comfortText = feelingsComfort[feeling];
+        missMeResponseText.style.opacity = '0';
+        setTimeout(() => {
+          missMeResponseText.textContent = comfortText;
+          missMeResponseText.style.opacity = '1';
+        }, 300);
+
+        if (feeling === 'hug') {
+          // Burst lots of hearts!
+          burstEmojisList(['❤️', '💖', '💕', '🫂', '💗']);
+        } else if (feeling === 'lonely') {
+          burstEmojisList(['⭐', '✨', '🌟', '💫', '💛']);
+        } else if (feeling === 'talk') {
+          burstEmojisList(['💬', '✉️', '📞', '🌸', '✨']);
+        }
+      }
+    });
+  });
+
+  // Helper to trigger emoji bursts programmatically
+  function burstEmojisList(emojis) {
+    const burstCount = 12 + Math.floor(Math.random() * 8); // 12 to 19 emojis for extra romance!
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    for (let i = 0; i < burstCount; i++) {
+      const span = document.createElement('span');
+      span.className = 'click-emoji-pop';
+      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      
+      // Spawn around the screen center or viewport
+      const startX = screenWidth / 2 + (Math.random() * 200 - 100);
+      const startY = screenHeight / 2 + (Math.random() * 200 - 100);
+      
+      span.style.left = `${startX}px`;
+      span.style.top = `${startY}px`;
+      
+      const dx = `${(Math.random() * 300 - 150).toFixed(1)}px`;
+      const dy = `${(Math.random() * -250 - 50).toFixed(1)}px`; // Upwards float
+      const rot = `${(Math.random() * 360 - 180).toFixed(1)}deg`;
+      
+      span.style.setProperty('--dx', dx);
+      span.style.setProperty('--dy', dy);
+      span.style.setProperty('--rot', rot);
+      
+      document.body.appendChild(span);
+      
+      setTimeout(() => {
+        span.remove();
+      }, 950);
+    }
+  }
+
+  // Helper to trigger click explosion effect manually
+  function triggerClickExplosion(event) {
+    const burstCount = 6 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < burstCount; i++) {
+      const span = document.createElement('span');
+      span.className = 'click-emoji-pop';
+      span.textContent = clickEmojisList[Math.floor(Math.random() * clickEmojisList.length)];
+      
+      span.style.left = `${event.clientX}px`;
+      span.style.top = `${event.clientY}px`;
+      
+      const dx = `${(Math.random() * 160 - 80).toFixed(1)}px`;
+      const dy = `${(Math.random() * -120 - 30).toFixed(1)}px`;
+      const rot = `${(Math.random() * 360 - 180).toFixed(1)}deg`;
+      
+      span.style.setProperty('--dx', dx);
+      span.style.setProperty('--dy', dy);
+      span.style.setProperty('--rot', rot);
+      
+      document.body.appendChild(span);
+      
+      setTimeout(() => {
+        span.remove();
+      }, 950);
+    }
+  }
+
+  // Helper to open a specific image in the lightbox
+  function openPhotoLightbox(photoSrc) {
+    closeLightbox();
+    
+    const tempPolaroid = document.createElement('div');
+    tempPolaroid.className = 'floating-polaroid zoomed';
+    tempPolaroid.style.setProperty('--rot', '0deg');
+    tempPolaroid.innerHTML = `<img src="${photoSrc}" alt="Tanisha Memory">`;
+    
+    document.body.appendChild(tempPolaroid);
+    lightboxOverlay.classList.add('active');
+    
+    // Clicking either overlay or image closes it
+    const cleanUp = () => {
+      tempPolaroid.remove();
+      lightboxOverlay.classList.remove('active');
+      lightboxOverlay.removeEventListener('click', cleanUp);
+      window.removeEventListener('scroll', cleanUp);
+      tempPolaroid.removeEventListener('click', cleanUp);
+    };
+    
+    lightboxOverlay.addEventListener('click', cleanUp);
+    window.addEventListener('scroll', cleanUp);
+    tempPolaroid.addEventListener('click', cleanUp);
+  }
 
   // Initialize particles
   setupParticles();
