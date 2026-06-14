@@ -948,9 +948,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return arr;
   }
 
+  // Shuffle the master photo pool once on load
+  const masterShuffledPool = shuffleArray(memoryPhotos);
+
   // --- Interactive Vintage Flip Cards Logic ---
   const flipCards = document.querySelectorAll('.flip-card');
-  const flipCardPhotos = shuffleArray(memoryPhotos);
+  const flipCardPhotos = masterShuffledPool.slice(0, flipCards.length);
+  const floatingPhotosPool = masterShuffledPool.slice(flipCards.length);
 
   flipCards.forEach((card, idx) => {
     const front = card.querySelector('.flip-card-front');
@@ -1015,12 +1019,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!floatingContainer) return;
     floatingContainer.innerHTML = '';
     
-    // Shuffle the entire photo pool
-    const shuffledPool = shuffleArray(memoryPhotos);
-    
-    // Distribute first 14 to screen, store the rest in the playlist queue
-    activeFloatingPhotos = shuffledPool.slice(0, 14);
-    photoQueue = shuffledPool.slice(14);
+    // Distribute first 14 of the remaining pool to screen, store the rest in the playlist queue
+    activeFloatingPhotos = floatingPhotosPool.slice(0, 14);
+    photoQueue = floatingPhotosPool.slice(14);
 
     const positions = [
       // Left side staggered vertically
@@ -1100,7 +1101,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         if (photoQueue.length === 0) {
           // Re-populate and shuffle if the queue is empty
-          photoQueue = shuffleArray(memoryPhotos).filter(p => !activeFloatingPhotos.includes(p));
+          photoQueue = shuffleArray(floatingPhotosPool).filter(p => !activeFloatingPhotos.includes(p));
         }
 
         const newPhoto = photoQueue.shift();
