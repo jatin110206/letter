@@ -1116,8 +1116,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reset inline opacity to let CSS transition control it back to background value
         polaroid.style.opacity = '';
-      }, 2000);
-    }, 12000);
+      }, 1000);
+    }, 3000);
   }
 
   window.initFloatingPolaroids = initFloatingPolaroids;
