@@ -756,38 +756,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateRelationshipClock, 1000);
   updateRelationshipClock(); // initial run
 
-  // --- Interactive Vintage Flip Cards Logic ---
-  const flipCards = document.querySelectorAll('.flip-card');
-  const flipCardPhotos = shuffleArray(memoryPhotos);
 
-  flipCards.forEach((card, idx) => {
-    const front = card.querySelector('.flip-card-front');
-    if (front) {
-      const photo = flipCardPhotos[idx % flipCardPhotos.length];
-      
-      const img = document.createElement('img');
-      img.className = 'card-front-photo';
-      img.src = photo;
-      img.alt = "Memory Front";
-      img.loading = "lazy";
-      
-      const overlay = document.createElement('div');
-      overlay.className = 'card-front-overlay';
-      
-      front.prepend(overlay);
-      front.prepend(img);
-    }
-
-    card.addEventListener('click', () => {
-      const inner = card.querySelector('.flip-card-inner');
-      inner.classList.toggle('flipped');
-      
-      // Play a soft paper rustling flap sound if audio is initialized
-      if (audioCtx) {
-        playPaperRustle();
-      }
-    });
-  });
 
   // --- Dynamic Polaroid Memories Logic ---
   const memoryPhotos = [
@@ -978,6 +947,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return arr;
   }
+
+  // --- Interactive Vintage Flip Cards Logic ---
+  const flipCards = document.querySelectorAll('.flip-card');
+  const flipCardPhotos = shuffleArray(memoryPhotos);
+
+  flipCards.forEach((card, idx) => {
+    const front = card.querySelector('.flip-card-front');
+    if (front) {
+      const photo = flipCardPhotos[idx % flipCardPhotos.length];
+      
+      const img = document.createElement('img');
+      img.className = 'card-front-photo';
+      img.src = photo;
+      img.alt = "Memory Front";
+      img.loading = "lazy";
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'card-front-overlay';
+      
+      front.prepend(overlay);
+      front.prepend(img);
+    }
+
+    card.addEventListener('click', () => {
+      const inner = card.querySelector('.flip-card-inner');
+      inner.classList.toggle('flipped');
+      
+      // Play a soft paper rustling flap sound if audio is initialized
+      if (audioCtx) {
+        playPaperRustle();
+      }
+    });
+  });
 
   function setupLightbox(element) {
     element.addEventListener('click', (e) => {
