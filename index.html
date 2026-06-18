@@ -236,6 +236,106 @@
           </div>
         </div>
 
+        <!-- "donot be emotional lets play a game" Section -->
+        <div class="vintage-games-drawer">
+          <h3 class="games-drawer-title">donot be emotional lets play a game</h3>
+          <p class="games-drawer-subtitle">Click a vintage item to open a secret box... ✨</p>
+          
+          <!-- Selection Menu -->
+          <div class="games-menu" id="games-menu">
+            <button class="game-menu-btn" data-game="candle" id="btn-candle">🕯️ Shield the Flame</button>
+            <button class="game-menu-btn" data-game="jar" id="btn-jar">🏺 Unsent Messages</button>
+            <button class="game-menu-btn" data-game="wish" id="btn-wish">🌠 Make a Wish</button>
+            <button class="game-menu-btn" data-game="heart" id="btn-heart">🧩 Heart Pieces</button>
+            <button class="game-menu-btn" data-game="rose" id="btn-rose">🌹 Pick a Rose</button>
+          </div>
+
+          <!-- Active Game Container -->
+          <div class="active-game-viewport" id="active-game-viewport">
+            <button class="game-back-btn hidden" id="game-back-btn">← Back to Menu</button>
+            
+            <!-- Game 1: Protect the Candle -->
+            <div class="game-pane hidden" id="pane-candle">
+              <div class="candle-game-wrapper">
+                <div class="wind-overlay" id="candle-wind-overlay"></div>
+                <div class="candle-game-body" id="candle-game-body">
+                  <div class="candle-game-shield-area" id="candle-shield-area"></div>
+                  <div class="candle-game-shield-aura" id="candle-shield-aura"></div>
+                  <div class="candle-game-candle">
+                    <div class="wick"></div>
+                    <div class="flame" id="candle-game-flame"></div>
+                  </div>
+                </div>
+                <div class="candle-progress-bar"><div class="candle-progress-fill" id="candle-progress-fill"></div></div>
+                <p class="candle-instruction">Shield the candle on its left side from the cold wind by hovering your mouse/finger...</p>
+                <p class="candle-game-reward hidden" id="candle-reward-msg">"Some things remain precious even when time tries to blow them away."</p>
+              </div>
+            </div>
+
+            <!-- Game 2: Unsent Messages Jar -->
+            <div class="game-pane hidden" id="pane-jar">
+              <div class="jar-game-wrapper">
+                <div class="jar-container" id="jar-click-area">
+                  <div class="jar-cork"></div>
+                  <div class="jar-glass">
+                    <div class="jar-slips-container" id="jar-slips-container">
+                      <!-- Slips dynamically generated in JS -->
+                    </div>
+                  </div>
+                </div>
+                <!-- Unfolded Note view -->
+                <div class="note-unfold-overlay hidden" id="note-unfold-overlay">
+                  <div class="note-paper">
+                    <p class="note-text" id="note-unfold-text"></p>
+                    <button class="note-fold-btn" id="note-fold-btn">Fold back</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Game 3: Make a Wish -->
+            <div class="game-pane hidden" id="pane-wish">
+              <div class="wish-game-wrapper">
+                <div class="telescope-sky" id="wish-sky">
+                  <!-- Constellation canvas/SVG inside -->
+                  <div class="stars-layer" id="wish-stars-layer"></div>
+                  <svg class="constellation-svg" id="wish-constellation" viewBox="0 0 400 250"></svg>
+                </div>
+                <p class="wish-instruction" id="wish-instruction">Find and click a star in the night sky to make a wish...</p>
+                <p class="wish-game-reward hidden" id="wish-reward-msg">"My wish is that you're happy."</p>
+              </div>
+            </div>
+
+            <!-- Game 4: Heart Fragments -->
+            <div class="game-pane hidden" id="pane-heart">
+              <div class="heart-game-wrapper">
+                <div class="heart-board">
+                  <div class="heart-outline-container" id="heart-outline-container">
+                    <!-- Target positions for fragments -->
+                  </div>
+                  <div class="fragments-container" id="fragments-container"></div>
+                </div>
+                <p class="heart-instruction" id="heart-instruction">Collect the scattered pieces to make the heart whole...</p>
+                <p class="heart-game-reward hidden" id="heart-reward-msg">"No matter how scattered life becomes, some feelings remain whole."</p>
+              </div>
+            </div>
+
+            <!-- Game 5: Pick a Rose -->
+            <div class="game-pane hidden" id="pane-rose">
+              <div class="rose-game-wrapper">
+                <div class="roses-grid" id="roses-grid"></div>
+                <p class="rose-instruction" id="rose-instruction">10 roses are before you. Only one contains a hidden letter...</p>
+                <div class="rose-letter-overlay hidden" id="rose-letter-overlay">
+                  <div class="rose-letter-paper">
+                    <p class="rose-letter-text" id="rose-letter-text"></p>
+                    <button class="rose-letter-close-btn" id="rose-letter-close-btn">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Final Handwritten Signature -->
         <p class="final-quote" style="font-family: var(--font-handwriting); font-size: 26px; margin-top: 55px; color: #d0bba6; line-height: 1.6;">
           Forever wishing you happiness,<br>

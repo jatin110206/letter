@@ -1510,6 +1510,521 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', cleanUp);
     tempPolaroid.addEventListener('click', cleanUp);
   }
+  // --- Retro Games Section Logic ---
+  const gamesMenu = document.getElementById('games-menu');
+  const gameBackBtn = document.getElementById('game-back-btn');
+  const gamePanes = document.querySelectorAll('.game-pane');
+  
+  // Menu Navigation
+  const gameMenuBtns = document.querySelectorAll('.game-menu-btn');
+  gameMenuBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const gameType = btn.getAttribute('data-game');
+      openGamePane(gameType);
+    });
+  });
+
+  gameBackBtn.addEventListener('click', () => {
+    closeActiveGame();
+  });
+
+  function openGamePane(gameType) {
+    if (audioCtx) playPaperRustle();
+    
+    // Hide menu
+    gamesMenu.classList.add('hidden');
+    // Show back button
+    gameBackBtn.classList.remove('hidden');
+    
+    // Hide all panes
+    gamePanes.forEach(pane => pane.classList.add('hidden'));
+    
+    // Show active pane
+    const activePane = document.getElementById(`pane-${gameType}`);
+    if (activePane) {
+      activePane.classList.remove('hidden');
+    }
+    
+    // Initialize specific game state
+    if (gameType === 'candle') {
+      startCandleGame();
+    } else if (gameType === 'jar') {
+      startJarGame();
+    } else if (gameType === 'wish') {
+      startWishGame();
+    } else if (gameType === 'heart') {
+      startHeartGame();
+    } else if (gameType === 'rose') {
+      startRoseGame();
+    }
+  }
+
+  function closeActiveGame() {
+    if (audioCtx) playPaperRustle();
+    
+    // Reset all game states
+    resetCandleGame();
+    resetJarGame();
+    resetWishGame();
+    resetHeartGame();
+    resetRoseGame();
+    
+    // Hide all panes
+    gamePanes.forEach(pane => pane.classList.add('hidden'));
+    
+    // Hide back button
+    gameBackBtn.classList.add('hidden');
+    // Show menu
+    gamesMenu.classList.remove('hidden');
+  }
+
+  // --- Game 1: Protect the Candle ---
+  let candleGameInterval = null;
+  let candleProgress = 0;
+  let isCandleShielded = false;
+  const candleShieldArea = document.getElementById('candle-shield-area');
+  const candleShieldAura = document.getElementById('candle-shield-aura');
+  const candleGameFlame = document.getElementById('candle-game-flame');
+  const candleProgressFill = document.getElementById('candle-progress-fill');
+  const candleRewardMsg = document.getElementById('candle-reward-msg');
+  
+  // Set wind line elements dynamically
+  const candleGameBody = document.getElementById('candle-game-body');
+  for (let i = 0; i < 3; i++) {
+    const windLine = document.createElement('div');
+    windLine.className = `wind-line wind-line-${i+1}`;
+    candleGameBody.appendChild(windLine);
+  }
+
+  function handleCandlePointerEnter() {
+    isCandleShielded = true;
+    candleShieldAura.classList.add('active');
+    candleGameFlame.classList.remove('unprotected');
+  }
+
+  function handleCandlePointerLeave() {
+    isCandleShielded = false;
+    candleShieldAura.classList.remove('active');
+    candleGameFlame.classList.add('unprotected');
+  }
+
+  function startCandleGame() {
+    resetCandleGame();
+    
+    // Listeners for hover/touch on left side
+    candleShieldArea.addEventListener('pointerenter', handleCandlePointerEnter);
+    candleShieldArea.addEventListener('pointerleave', handleCandlePointerLeave);
+    
+    // Default to unprotected state initially
+    candleGameFlame.classList.add('unprotected');
+    
+    candleGameInterval = setInterval(() => {
+      if (isCandleShielded) {
+        candleProgress += 1; // 1% per 100ms = 10s total
+        candleProgressFill.style.width = `${candleProgress}%`;
+        
+        if (candleProgress >= 100) {
+          clearInterval(candleGameInterval);
+          candleGameInterval = null;
+          
+          // Win condition
+          candleGameFlame.classList.remove('unprotected');
+          candleShieldAura.classList.remove('active');
+          
+          // Remove wind lines
+          const windLines = candleGameBody.querySelectorAll('.wind-line');
+          windLines.forEach(wl => wl.style.display = 'none');
+          
+          // Show quote
+          candleRewardMsg.classList.remove('hidden');
+          
+          // Cleanup listeners
+          candleShieldArea.removeEventListener('pointerenter', handleCandlePointerEnter);
+          candleShieldArea.removeEventListener('pointerleave', handleCandlePointerLeave);
+        }
+      }
+    }, 100);
+  }
+
+  function resetCandleGame() {
+    if (candleGameInterval) {
+      clearInterval(candleGameInterval);
+      candleGameInterval = null;
+    }
+    candleProgress = 0;
+    candleProgressFill.style.width = '0%';
+    isCandleShielded = false;
+    
+    candleShieldAura.classList.remove('active');
+    candleGameFlame.classList.remove('unprotected');
+    candleRewardMsg.classList.add('hidden');
+    
+    const windLines = candleGameBody.querySelectorAll('.wind-line');
+    windLines.forEach(wl => wl.style.display = 'block');
+    
+    candleShieldArea.removeEventListener('pointerenter', handleCandlePointerEnter);
+    candleShieldArea.removeEventListener('pointerleave', handleCandlePointerLeave);
+  }
+
+  // --- Game 2: Unsent Messages Jar ---
+  const jarSlips = [
+    "I almost texted you today.",
+    "I saw something that reminded me of you.",
+    "I hope you're sleeping well.",
+    "I found an old playlist we shared.",
+    "Sometimes, I wonder if you still think of me.",
+    "I wanted to call you, but I stopped myself.",
+    "I hope you're proud of the person you're becoming.",
+    "I still remember the smell of coffee we had together."
+  ];
+
+  const jarSlipsContainer = document.getElementById('jar-slips-container');
+  const noteUnfoldOverlay = document.getElementById('note-unfold-overlay');
+  const noteUnfoldText = document.getElementById('note-unfold-text');
+  const noteFoldBtn = document.getElementById('note-fold-btn');
+
+  noteFoldBtn.addEventListener('click', () => {
+    noteUnfoldOverlay.classList.add('hidden');
+    if (audioCtx) playPaperRustle();
+  });
+
+  function startJarGame() {
+    jarSlipsContainer.innerHTML = '';
+    
+    jarSlips.forEach((msgText, idx) => {
+      const slip = document.createElement('div');
+      slip.className = 'jar-slip';
+      
+      // Random coordinates inside the jar dimensions
+      const randomLeft = 10 + Math.random() * 60; // percentage
+      const randomBottom = 10 + Math.random() * 55; // percentage
+      const baseRot = -20 + Math.random() * 40;
+      const driftRot = -20 + Math.random() * 40;
+      const hoverRot = -35 + Math.random() * 70;
+      
+      slip.style.left = `${randomLeft}%`;
+      slip.style.bottom = `${randomBottom}%`;
+      slip.style.setProperty('--rot-base', `${baseRot}deg`);
+      slip.style.setProperty('--rot-drift', `${driftRot}deg`);
+      slip.style.setProperty('--rot-hover', `${hoverRot}deg`);
+      slip.style.animationDelay = `${idx * 0.4}s`;
+      
+      slip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        noteUnfoldText.textContent = msgText;
+        noteUnfoldOverlay.classList.remove('hidden');
+        if (audioCtx) playPaperRustle();
+      });
+      
+      jarSlipsContainer.appendChild(slip);
+    });
+  }
+
+  function resetJarGame() {
+    noteUnfoldOverlay.classList.add('hidden');
+    jarSlipsContainer.innerHTML = '';
+  }
+
+  // --- Game 3: Make a Wish ---
+  const wishConstellation = document.getElementById('wish-constellation');
+  const wishStarsLayer = document.getElementById('wish-stars-layer');
+  const wishRewardMsg = document.getElementById('wish-reward-msg');
+  const wishInstruction = document.getElementById('wish-instruction');
+  const wishSky = document.getElementById('wish-sky');
+
+  // Constellation heart points in the 400x250 viewBox
+  const constellationPoints = [
+    { x: 200, y: 190 }, // bottom peak
+    { x: 120, y: 120 }, // left side
+    { x: 120, y: 80 },  // left top loop
+    { x: 160, y: 55 },  // left loop peak
+    { x: 200, y: 85 },  // center dip
+    { x: 240, y: 55 },  // right loop peak
+    { x: 280, y: 80 },  // right top loop
+    { x: 280, y: 120 }  // right side
+  ];
+
+  function startWishGame() {
+    resetWishGame();
+    
+    // Generate random background stars in telescope view
+    for (let i = 0; i < 20; i++) {
+      const star = document.createElement('div');
+      star.className = 'wish-star twinkle';
+      const size = 1.5 + Math.random() * 2;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.left = `${5 + Math.random() * 90}%`;
+      star.style.top = `${5 + Math.random() * 90}%`;
+      star.style.animationDelay = `${Math.random() * 2}s`;
+      
+      // Star click trigger
+      star.addEventListener('click', (e) => {
+        triggerWish(e.clientX, e.clientY);
+      });
+      wishStarsLayer.appendChild(star);
+    }
+  }
+
+  let wishTriggered = false;
+  function triggerWish(clientX, clientY) {
+    if (wishTriggered) return;
+    wishTriggered = true;
+    
+    if (audioCtx) playPaperRustle();
+    
+    // Create shooting star trail effect
+    const rect = wishSky.getBoundingClientRect();
+    const startX = clientX - rect.left;
+    const startY = clientY - rect.top;
+    
+    const trail = document.createElement('div');
+    trail.className = 'shooting-star-trail';
+    trail.style.left = `${startX}px`;
+    trail.style.top = `${startY}px`;
+    trail.style.opacity = '1';
+    wishSky.appendChild(trail);
+    
+    // Force reflow
+    trail.getBoundingClientRect();
+    
+    // Animate down-left
+    trail.style.transition = 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+    trail.style.left = `${startX - 120}px`;
+    trail.style.top = `${startY + 120}px`;
+    trail.style.opacity = '0';
+    
+    setTimeout(() => {
+      trail.remove();
+    }, 850);
+    
+    // Reveal constellation
+    wishConstellation.innerHTML = '';
+    
+    // Create connection lines
+    const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    let pathD = `M ${constellationPoints[0].x} ${constellationPoints[0].y}`;
+    for (let i = 1; i < constellationPoints.length; i++) {
+      pathD += ` L ${constellationPoints[i].x} ${constellationPoints[i].y}`;
+    }
+    pathD += ' Z'; // close path
+    
+    linePath.setAttribute('d', pathD);
+    linePath.setAttribute('class', 'constellation-line');
+    linePath.setAttribute('fill', 'none');
+    
+    // Animate path draw-in
+    wishConstellation.appendChild(linePath);
+    
+    const length = linePath.getTotalLength();
+    linePath.style.strokeDasharray = length;
+    linePath.style.strokeDashoffset = length;
+    
+    // Trigger transition
+    linePath.getBoundingClientRect();
+    linePath.style.transition = 'stroke-dashoffset 1.8s ease-in-out';
+    linePath.style.strokeDashoffset = '0';
+    
+    // Create glow stars at constellation nodes
+    constellationPoints.forEach((p, idx) => {
+      setTimeout(() => {
+        const cStar = document.createElement('div');
+        cStar.className = 'wish-star';
+        cStar.style.width = '6px';
+        cStar.style.height = '6px';
+        // Calculate relative coordinates back to percentages
+        const pctX = (p.x / 400) * 100;
+        const pctY = (p.y / 250) * 100;
+        cStar.style.left = `${pctX}%`;
+        cStar.style.top = `${pctY}%`;
+        cStar.style.boxShadow = '0 0 10px #fff, 0 0 15px var(--candle-gold)';
+        cStar.style.background = '#ffdd00';
+        wishStarsLayer.appendChild(cStar);
+        
+        // Soft bubble pop sound if active
+        if (audioCtx) {
+          playRaindrop(audioCtx.currentTime);
+        }
+      }, idx * 180);
+    });
+    
+    setTimeout(() => {
+      wishRewardMsg.classList.remove('hidden');
+      wishInstruction.style.opacity = '0.5';
+    }, 1800);
+  }
+
+  function resetWishGame() {
+    wishStarsLayer.innerHTML = '';
+    wishConstellation.innerHTML = '';
+    wishRewardMsg.classList.add('hidden');
+    wishInstruction.style.opacity = '1';
+    wishTriggered = false;
+  }
+
+  // --- Game 4: Heart Fragments ---
+  const fragmentsContainer = document.getElementById('fragments-container');
+  const heartOutlineContainer = document.getElementById('heart-outline-container');
+  const heartRewardMsg = document.getElementById('heart-reward-msg');
+  
+  // We'll place a final complete glowing heart in center
+  const heartCompleted = document.createElement('div');
+  heartCompleted.className = 'heart-completed';
+  heartCompleted.textContent = '❤️';
+  fragmentsContainer.appendChild(heartCompleted);
+
+  // Fragments descriptions (glowing text items representing feelings)
+  const fragmentSymbols = ['💖', '💕', '💓', '💝', '💞', '💗'];
+  const fragmentCount = fragmentSymbols.length;
+  let collectedFragments = 0;
+
+  function startHeartGame() {
+    resetHeartGame();
+    
+    // Generate floating fragments
+    for (let i = 0; i < fragmentCount; i++) {
+      const frag = document.createElement('div');
+      frag.className = 'heart-fragment';
+      frag.textContent = fragmentSymbols[i];
+      
+      // Random coordinates avoiding center outline
+      let randomLeft, randomTop;
+      if (Math.random() < 0.5) {
+        randomLeft = 5 + Math.random() * 25; // Left third
+      } else {
+        randomLeft = 70 + Math.random() * 20; // Right third
+      }
+      randomTop = 10 + Math.random() * 70;
+      
+      const hoverRot = -30 + Math.random() * 60;
+      
+      frag.style.left = `${randomLeft}%`;
+      frag.style.top = `${randomTop}%`;
+      frag.style.setProperty('--rot-hover', `${hoverRot}deg`);
+      
+      // Floating motion using keyframe from main stylesheet
+      const anims = ['float-anim-1', 'float-anim-2', 'float-anim-3', 'float-anim-4', 'float-anim-5', 'float-anim-6'];
+      frag.classList.add(anims[i % anims.length]);
+      
+      frag.addEventListener('click', () => {
+        collectFragment(frag);
+      });
+      
+      fragmentsContainer.appendChild(frag);
+    }
+  }
+
+  function collectFragment(frag) {
+    if (frag.classList.contains('collected')) return;
+    frag.classList.add('collected');
+    
+    if (audioCtx) playPaperRustle();
+    
+    // Remove float animations
+    frag.className = 'heart-fragment collected';
+    
+    // Animate to center board location
+    frag.style.left = '50%';
+    frag.style.top = '50%';
+    frag.style.transform = 'translate(-50%, -50%) scale(0.4)';
+    frag.style.opacity = '0';
+    
+    collectedFragments++;
+    
+    if (collectedFragments === fragmentCount) {
+      setTimeout(() => {
+        // Complete heart assembled!
+        heartCompleted.classList.add('active');
+        heartOutlineContainer.style.opacity = '0';
+        heartRewardMsg.classList.remove('hidden');
+        
+        // Extra romantic explosion burst!
+        burstEmojisList(['❤️', '💖', '✨', '💕', '💗']);
+      }, 800);
+    }
+  }
+
+  function resetHeartGame() {
+    collectedFragments = 0;
+    heartCompleted.classList.remove('active');
+    heartOutlineContainer.style.opacity = '0.6';
+    heartRewardMsg.classList.add('hidden');
+    
+    // Clear all except complete heart child
+    const frags = fragmentsContainer.querySelectorAll('.heart-fragment');
+    frags.forEach(f => f.remove());
+  }
+
+  // --- Game 5: Pick a Rose ---
+  const rosesGrid = document.getElementById('roses-grid');
+  const roseLetterOverlay = document.getElementById('rose-letter-overlay');
+  const roseLetterText = document.getElementById('rose-letter-text');
+  const roseLetterCloseBtn = document.getElementById('rose-letter-close-btn');
+
+  const roseQuotes = [
+    "If you're reading this, I hope today was kind to you. 🌸",
+    "Remember, you are doing the best you can, and that is enough. ✨",
+    "I hope your day is filled with little moments of joy. 🧸",
+    "Be gentle with yourself. You are growing. 🌱",
+    "You are stronger and more resilient than you know. 🌟",
+    "May your heart find peace and comfort today. 🕊️",
+    "I hope someone reminded you of how special you are today. 💫",
+    "You deserve all the happiness you give to others. 💖",
+    "Whatever is on your mind, I hope it gets easier. 🌸",
+    "No matter how far apart, I'm always rooting for you. 🌹"
+  ];
+
+  roseLetterCloseBtn.addEventListener('click', () => {
+    roseLetterOverlay.classList.add('hidden');
+    if (audioCtx) playPaperRustle();
+  });
+
+  let secretRoseIndex = 0;
+  let activeRoseQuote = "";
+
+  function startRoseGame() {
+    resetRoseGame();
+    
+    // Choose one secret index randomly
+    secretRoseIndex = Math.floor(Math.random() * 10);
+    // Choose quote randomly
+    activeRoseQuote = roseQuotes[Math.floor(Math.random() * roseQuotes.length)];
+    
+    for (let i = 0; i < 10; i++) {
+      const roseItem = document.createElement('div');
+      roseItem.className = 'rose-item';
+      roseItem.textContent = '🌹'; // Initial closed rose
+      
+      roseItem.addEventListener('click', () => {
+        if (roseItem.classList.contains('bloomed')) return;
+        roseItem.classList.add('bloomed');
+        
+        if (i === secretRoseIndex) {
+          // Success! Secret rose bloomed completely
+          roseItem.textContent = '💮'; // Blooming rose symbol or special flower
+          roseItem.style.filter = 'drop-shadow(0 0 10px var(--candle-gold))';
+          
+          setTimeout(() => {
+            roseLetterText.textContent = activeRoseQuote;
+            roseLetterOverlay.classList.remove('hidden');
+            if (audioCtx) playPaperRustle();
+          }, 450);
+        } else {
+          // Empty rose
+          roseItem.textContent = '🥀'; // Withered flower
+          roseItem.style.opacity = '0.5';
+          if (audioCtx) playRaindrop(audioCtx.currentTime); // soft drip drop sound
+        }
+      });
+      
+      rosesGrid.appendChild(roseItem);
+    }
+  }
+
+  function resetRoseGame() {
+    rosesGrid.innerHTML = '';
+    roseLetterOverlay.classList.add('hidden');
+  }
 
   // Initialize particles
   setupParticles();
